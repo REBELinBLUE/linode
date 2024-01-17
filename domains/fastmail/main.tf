@@ -11,9 +11,9 @@ resource "linode_domain" "this" {
 }
 
 resource "linode_domain_record" "mx" {
-  count = length(local.domains) * 2 # 2 For each domain, if it increases multiple the value and change the 2s below
+  count = local.number_of_domains * 2 # 2 For each domain, if it increases multiple the value and change the 2s below
 
-  domain_id = element(values(local.domains), floor(count.index / 2))
+  domain_id = element(local.domain_ids, floor(count.index / 2))
 
   record_type = "MX"
   target      = "in${count.index % 2 + 1}-smtp.messagingengine.com"
@@ -23,22 +23,22 @@ resource "linode_domain_record" "mx" {
 }
 
 resource "linode_domain_record" "domainkey" {
-  count = length(local.domains) * 3 # 3 For each domain, if it increases multiple the value and change the 2s below
+  count = local.number_of_domains * 3 # 3 For each domain, if it increases multiple the value and change the 2s below
 
-  domain_id = element(values(local.domains), floor(count.index / 3))
+  domain_id = element(local.domain_ids, floor(count.index / 3))
 
   record_type = "CNAME"
   name        = "fm${count.index % 3 + 1}._domainkey"
-  target      = "fm${count.index % 3 + 1}.${element(keys(local.domains), floor(count.index / 3))}.dkim.fmhosted.com"
+  target      = "fm${count.index % 3 + 1}.${element(local.domain_names, floor(count.index / 3))}.dkim.fmhosted.com"
   priority    = 0
   ttl_sec     = 0
   weight      = 0
 }
 
 resource "linode_domain_record" "dmarc" {
-  count = length(local.domains)
+  count = local.number_of_domains
 
-  domain_id = element(values(local.domains), count.index)
+  domain_id = element(local.domain_ids, count.index)
 
   record_type = "TXT"
   name        = "_dmarc"
@@ -49,9 +49,9 @@ resource "linode_domain_record" "dmarc" {
 }
 
 resource "linode_domain_record" "spf" {
-  count = length(local.domains)
+  count = local.number_of_domains
 
-  domain_id = element(values(local.domains), count.index)
+  domain_id = element(local.domain_ids, count.index)
 
   record_type = "TXT"
   target      = "v=spf1 include:spf.messagingengine.com ?all"
@@ -62,10 +62,11 @@ resource "linode_domain_record" "spf" {
 
 // FIXME: This might no longer be needed
 resource "linode_domain_record" "legacy_domainkey" {
-  count = length(local.domains)
+  count = local.number_of_domains
 
-  domain_id = element(values(local.domains), count.index)
+  domain_id = element(local.domain_ids, count.index)
 
+  // mesmtp.rebelinblue.com.dkim.fmhosted.com
   record_type = "TXT"
   name        = "mesmtp._domainkey"
   target      = "v=DKIM1; k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDMfgWVBMV4wfkdrHa5TGTpQwzVGguEx6Eloni4mtfdcmaZ/zFf0cYfxJ+1D5h313+IPfk7YW7mV9QrEx3G0rnfMMNeIlqHP6FkDd6IBchVl9UeRDItRGW9Cy/g+7SxibmiELPEGI9kw1A25IoDQEFws/3hMQLhqXRbsWdQIxWnowIDAQAB"
@@ -75,6 +76,66 @@ resource "linode_domain_record" "legacy_domainkey" {
   weight      = 5
 }
 
-# resource "linode"
+resource "linode_domain_record" "autodiscovery" {
+  for_each = {
+    "submission" = {
+      "weight"   = 1
+      "port"     = 587
+      "target"   = "smtp.fastmail.com"
+    },
+    "imaps" = {
+      "weight" = 1
+      "port"   = 993
+      "target" = "imap.fastmail.com"
+    },
+    "pop3s" = {
+      "weight"   = 1
+      "port"     = 995
+      "target"   = "pop.fastmail.com"
+      "priority" = 10
+    },
+    "carddavs" = {
+      "weight" = 1
+      "port"   = 443
+      "target" = "carddav.fastmail.com"
+    },
+    "caldavs" = {
+      "weight" = 1
+      "port"   = 443
+      "target" = "caldav.fastmail.com"
+    },
+    "jmap" = {
+      "port"   = 443
+      "target" = "api.fastmail.com"
+    },
+    "autodiscovery" = {
+      "port"   = 443
+      "target" = "autodiscover.fastmail.com"
+    },
+    "imap"    = {},
+    "pop3"    = {},
+    "carddav" = {},
+    "caldav"  = {},
+  }
 
-// TODO: Add auto discovery https://www.fastmail.help/hc/en-us/articles/360060591153-Manual-DNS-configuration
+  domain_id = var.root_domain_id
+
+  record_type = "SRV"
+  protocol    = "tcp"
+  service     = each.key
+  target      = try(each.value.target, ".")
+  port        = try(each.value.port, 0)
+  priority    = try(each.value.priority, 0)
+  weight      = try(each.value.weight, 0)
+  ttl_sec     = 0
+}
+
+resource "linode_domain_record" "webmail" {
+  domain_id   = var.root_domain_id
+  name        = "mail"
+  record_type = "CNAME"
+  target      = "mail.fastmail.com"
+  priority    = 0
+  ttl_sec     = 0
+  weight      = 0
+}
