@@ -1,0 +1,3 @@
+#!/bin/sh
+
+op run --account my.1password.com --env-file=".env" -- "$@"

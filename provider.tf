@@ -1,0 +1,7 @@
+provider "linode" {
+
+}
+
+provider "onepassword" {
+
+}
