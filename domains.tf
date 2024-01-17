@@ -17,7 +17,8 @@ module "phpdeployment" {
 module "cluster" {
   source = "./domains/cluster"
 
-  soa_email = var.soa_email
+  soa_email       = var.soa_email
+  cluster_address = var.firewalla_address
 }
 
 module "fastmail" {

@@ -20,7 +20,7 @@ resource "linode_domain_record" "cname" {
   domain_id   = linode_domain.this.id
   name        = each.value
   record_type = "CNAME"
-  target      = var.firewalla_address
+  target      = var.cluster_address
   priority    = 0
   ttl_sec     = 0
   weight      = 0
