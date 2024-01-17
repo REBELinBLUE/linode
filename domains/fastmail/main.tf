@@ -31,6 +31,27 @@ resource "linode_domain_record" "domainkey" {
   weight      = 0
 }
 
+resource "linode_domain_record" "dmarc" {
+  domain_id   = linode_domain.this.id
+  record_type = "TXT"
+  name        = "_dmarc.stephen.rebelinblue.com"
+  target      = "v=DMARC1; p=none;"
+  priority    = 0
+  ttl_sec     = 0
+  weight      = 0
+}
+
+
+resource "linode_domain_record" "root_dmarc" {
+  domain_id   = var.root_domain_id
+  record_type = "TXT"
+  name        = "_dmarc.rebelinblue.com"
+  target      = "v=DMARC1; p=none;"
+  priority    = 0
+  ttl_sec     = 0
+  weight      = 0
+}
+
 resource "linode_domain_record" "spf" {
   domain_id   = linode_domain.this.id
   record_type = "TXT"
