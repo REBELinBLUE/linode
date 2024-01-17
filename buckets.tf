@@ -7,18 +7,17 @@ resource "linode_object_storage_bucket" "terraform" {
   }
 }
 
-# resource "linode_object_storage_key" "terraform" { // FIXME: Import this
-#     label = "terraform"
+// FIXME: This doesn't really make sense here
+# resource "linode_object_storage_key" "terraform" {
+#   label = "terraform"
 
-#     bucket_access {
-#         bucket_name = linode_object_storage_bucket.terraform.label
-#         cluster     = linode_object_storage_bucket.terraform.cluster
-#         permissions = "read_write"
-#     }
+#   bucket_access {
+#     bucket_name = linode_object_storage_bucket.terraform.label
+#     cluster     = linode_object_storage_bucket.terraform.cluster
+#     permissions = "read_write"
+#   }
 
 #   lifecycle {
 #     prevent_destroy = true
 #   }
 # }
-
-// FIXME: This doesn't really make sense here

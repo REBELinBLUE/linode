@@ -6,7 +6,7 @@ variable "ipv4_address" {
   type = string
 
   # validation {
-    // can(cidrhost(var.string_like_valid_ipv4_cidr, 0)) - https://dev.to/drewmullen/terraform-variable-validation-with-samples-1ank
+  // can(cidrhost(var.string_like_valid_ipv4_cidr, 0)) - https://dev.to/drewmullen/terraform-variable-validation-with-samples-1ank
   #   condition     = can(cidrnetmask("${var.ipv4_address}/32") == var.ipv4_address)
   #   error_message = "Must be a valid IPv4 CIDR block address."
   # }
