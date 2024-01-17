@@ -12,3 +12,5 @@ resource "linode_object_storage_bucket" "terraform" {
 #         permissions = "read_write"
 #     }
 # }
+
+// FIXME: This doesn't really make sense here
