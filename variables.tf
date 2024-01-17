@@ -1,4 +1,4 @@
-variable "domain" {
+variable "domain_apex" {
   type    = string
   default = "rebelinblue.com"
 }

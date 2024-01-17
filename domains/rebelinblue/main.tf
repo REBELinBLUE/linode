@@ -1,6 +1,6 @@
 resource "linode_domain" "this" {
   type        = "master"
-  domain      = "rebelinblue.com"
+  domain      = var.domain_apex
   soa_email   = var.soa_email
   refresh_sec = 300
   retry_sec   = 300

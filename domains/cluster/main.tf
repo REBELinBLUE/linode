@@ -1,6 +1,6 @@
 resource "linode_domain" "this" {
   type        = "master"
-  domain      = "cluster.rebelinblue.com"
+  domain      = "cluster.${var.domain_apex}"
   soa_email   = var.soa_email
   refresh_sec = 300
   retry_sec   = 300
@@ -11,10 +11,9 @@ resource "linode_domain" "this" {
 resource "linode_domain_record" "cname" {
   for_each = toset([
     "alertmanager", "auth", "blackbox",
-    "cluster", "dashboard", "grafana",
-    "kubeview", "launchpad", "prometheus",
-    "promtail", "pushgateway", "traefik",
-    "weave-gitops"
+    "dashboard", "grafana", "kubeview",
+    "launchpad", "prometheus", "promtail",
+    "pushgateway", "traefik", "weave-gitops"
   ])
 
   domain_id   = linode_domain.this.id
