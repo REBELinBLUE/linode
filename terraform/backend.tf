@@ -3,6 +3,7 @@ terraform {
     bucket = "rebelinblue-terraform-state"
     key    = "terraform-state.tfstate"
     region = "fr-par-1"
+
     endpoints = {
       s3 = "https://fr-par-1.linodeobjects.com"
     }
