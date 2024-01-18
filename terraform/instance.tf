@@ -81,6 +81,11 @@ resource "linode_instance_config" "main" {
     disk_id     = linode_instance_disk.swap.id
   }
 
+  device {
+    device_name = "sdc"
+    volume_id = linode_volume.data.id
+  }
+
   root_device = "/dev/sda"
 
   interface {
@@ -112,3 +117,13 @@ resource "linode_rdns" "main_ipv6" {
 # data "linode_instance_backups" "main" {
 #   linode_id = linode_instance.main.id
 # }
+
+resource "linode_volume" "data" {
+  label = "data"
+  size = 10
+
+  region = linode_instance.main.region
+  linode_id = linode_instance.main.id
+
+  tags = ["managed_by:terraform"]
+}
