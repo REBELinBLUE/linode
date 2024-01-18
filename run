@@ -1,3 +1,5 @@
 #!/bin/sh
 
-op run --account my.1password.com --env-file=".env" -- "$@"
+tfswitch
+
+op run --account my.1password.com --env-file=".env" -- terraform -chdir=terraform "$@"
