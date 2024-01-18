@@ -19,3 +19,7 @@ variable "ipv6_address" {
   #   error_message = "Invalid IPv6 address format. Please provide a valid IPv6 address."
   # }
 }
+
+variable "default_tags" {
+  type = list(string)
+}

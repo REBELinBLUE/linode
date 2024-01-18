@@ -5,7 +5,7 @@ resource "linode_domain" "this" {
   refresh_sec = 0
   retry_sec   = 0
   ttl_sec     = 0
-  tags        = ["managed_by:terraform"]
+  tags        = var.default_tags
 }
 
 resource "linode_domain_record" "a" {

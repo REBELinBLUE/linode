@@ -9,3 +9,7 @@ variable "soa_email" {
 variable "cluster_address" {
   type = string
 }
+
+variable "default_tags" {
+  type = list(string)
+}

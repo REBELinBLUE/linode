@@ -9,3 +9,7 @@ variable "soa_email" {
 variable "root_domain_id" {
   type = string
 }
+
+variable "default_tags" {
+  type = list(string)
+}

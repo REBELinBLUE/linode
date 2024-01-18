@@ -63,7 +63,7 @@ resource "linode_firewall" "default" {
 
   //linodes = [linode_instance.main.id]
   //nodebalancers = []
-  tags = ["managed_by:terraform"]
+  tags = local.default_tags
 }
 
 resource "linode_firewall_device" "main" {

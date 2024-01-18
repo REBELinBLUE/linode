@@ -11,7 +11,7 @@ resource "linode_instance" "main" {
 
   # private_ip = false
 
-  tags = ["managed_by:terraform"]
+  tags = local.default_tags
 
   backups_enabled = true
   #swap_size       = 256
@@ -83,7 +83,7 @@ resource "linode_instance_config" "main" {
 
   device {
     device_name = "sdc"
-    volume_id = linode_volume.data.id
+    volume_id   = linode_volume.data.id
   }
 
   root_device = "/dev/sda"
@@ -120,10 +120,10 @@ resource "linode_rdns" "main_ipv6" {
 
 resource "linode_volume" "data" {
   label = "data"
-  size = 10
+  size  = 10
 
-  region = linode_instance.main.region
+  region    = linode_instance.main.region
   linode_id = linode_instance.main.id
 
-  tags = ["managed_by:terraform"]
+  tags = local.default_tags
 }
