@@ -22,23 +22,6 @@ resource "linode_domain_record" "mx" {
   weight      = 0
 }
 
-# FIXME: Look at migrating to wildcard domains instead of separate domains
-# https://www.fastmail.help/hc/en-us/articles/360060591153-Manual-DNS-configuration
-# https://www.fastmail.help/hc/en-us/articles/360060591053
-# resource "linode_domain_record" "wildcard" {
-#   count = 2
-
-#   domain_id = var.root_domain_id
-
-#   name = "*"
-
-#   record_type = "MX"
-#   target      = "in${count.index + 1}-smtp.messagingengine.com"
-#   priority    = (count.index + 1) * 10
-#   ttl_sec     = 0
-#   weight      = 0
-# }
-
 resource "linode_domain_record" "dkim" {
   count = local.number_of_domains * 3 # 3 For each domain, if it increases multiple the value and change the 2s below
 
