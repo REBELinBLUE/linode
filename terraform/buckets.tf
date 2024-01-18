@@ -1,5 +1,5 @@
 resource "linode_object_storage_bucket" "terraform" {
-  cluster = "fr-par-1"
+  cluster = "${data.linode_region.paris.id}-1"
   label   = "rebelinblue-terraform-state"
 
   lifecycle {

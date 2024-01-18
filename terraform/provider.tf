@@ -1,7 +1,1 @@
-provider "linode" {
-
-}
-
-provider "onepassword" {
-
-}
+provider "linode" {}
