@@ -1,0 +1,7 @@
+#!/bin/sh
+
+tfswitch
+
+op run --account my.1password.com --env-file=".env" -- terraform -chdir=terraform plan -out=tfplan
+cd terraform
+tf-summarize tfplan
