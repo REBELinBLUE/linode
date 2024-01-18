@@ -14,4 +14,8 @@ data "linode_region" "paris" {
   id = "fr-par"
 }
 
+data "linode_image" "ubuntu_16_04" {
+  id = "linode/ubuntu16.04lts"
+}
+
 data "linode_profile" "me" {}
