@@ -57,9 +57,10 @@ resource "linode_domain_record" "verification" {
 
 resource "linode_domain_record" "cname" {
   for_each = toset([
-    "ci", "console", "coverage",
-    "deploy", "dropshare", "games",
-    "supervisor", "www"
+    "deploy",
+    "dropshare", 
+    "games",
+    "www"
   ])
 
   domain_id   = linode_domain.this.id
