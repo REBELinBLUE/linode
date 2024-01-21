@@ -1,7 +1,3 @@
-locals {
-  instance_ipv4_address = one(linode_instance.main.ipv4)
-  instance_ipv6_address = cidrhost(linode_instance.main.ipv6, 0)
-}
 
 resource "linode_instance" "main" {
   label = "linode4819236"
@@ -33,7 +29,7 @@ resource "linode_instance_disk" "boot" {
   linode_id = linode_instance.main.id
 
   label      = "Ubuntu 16.04 LTS Disk"
-  size       = linode_instance.main.specs.0.disk - linode_instance.main.swap_size
+  size       = data.linode_instance_type.default.disk - linode_instance.main.swap_size
   filesystem = "ext4"
 
   # image = data.linode_image.ubuntu_16_04.id
@@ -41,7 +37,7 @@ resource "linode_instance_disk" "boot" {
   # authorized_keys = [ 
   #   linode_sshkey.onepassword.ssh_key,
   #   linode_sshkey.ipad.ssh_key,
-  #   linode_sshkey.gpg,
+  #   linode_sshkey.gpg.ssh_key,
   # ]
 
   # authorized_users = [ 
@@ -112,18 +108,4 @@ resource "linode_rdns" "main_ipv6" {
   address            = local.instance_ipv6_address
   rdns               = var.domain_apex
   wait_for_available = false
-}
-
-# data "linode_instance_backups" "main" {
-#   linode_id = linode_instance.main.id
-# }
-
-resource "linode_volume" "data" {
-  label = "data"
-  size  = 10
-
-  region    = linode_instance.main.region
-  linode_id = linode_instance.main.id
-
-  tags = local.default_tags
 }

@@ -18,4 +18,8 @@ data "linode_image" "ubuntu_16_04" {
   id = "linode/ubuntu16.04lts"
 }
 
+data "linode_image" "ubuntu_23_10" {
+  id = "linode/ubuntu23.10"
+}
+
 data "linode_profile" "me" {}
