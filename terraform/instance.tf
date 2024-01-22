@@ -38,7 +38,7 @@
 
 #   label      = "Boot"
 #   size       = data.linode_instance_type.default.disk - 512
-#   // linode_instance.ubuntu_23_10.swap_size FIXME This isn't working, sometimes it is 0 and creating an inconsistent plan
+#   # size       = data.linode_instance_type.default.disk - linode_instance.ubuntu_23_10.swap_size # FIXME This isn't working, sometimes it is 0 and creating an inconsistent plan
 #   filesystem = "ext4"
 
 #   image = data.linode_image.ubuntu_23_10.id
@@ -61,7 +61,7 @@
 
 #   label      = "Swap Image"
 #   size       = 512
-#   // linode_instance.ubuntu_23_10.swap_size FIXME This isn't working, sometimes it is 0 and creating an inconsistent plan
+#   # size       = linode_instance.ubuntu_23_10.swap_size # FIXME This isn't working, sometimes it is 0 and creating an inconsistent plan
 #   filesystem = "swap"
 # }
 
