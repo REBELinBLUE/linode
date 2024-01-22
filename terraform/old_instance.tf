@@ -3,19 +3,12 @@ locals {
 }
 
 resource "linode_instance" "main" {
-  label = "linode4819236"
-
   type   = data.linode_instance_type.default.id
   region = data.linode_region.london.id
-
-  # private_ip = false
 
   tags = local.default_tags
 
   backups_enabled = true
-  #swap_size       = 256
-  #resize_disk     = false
-  #migration_type  = "cold"
 
   alerts {
     cpu            = 90

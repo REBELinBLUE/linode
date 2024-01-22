@@ -12,12 +12,8 @@
 # }
 
 # resource "linode_instance" "ubuntu_23_10" {
-#   # label = "linode54223277"
-
 #   type   = data.linode_instance_type.default.id
 #   region = data.linode_region.london.id
-
-#   # private_ip = false
 
 #   tags = local.default_tags
 
@@ -57,8 +53,8 @@
 
 #   stackscript_id = linode_stackscript.bootstrap.id
 #   stackscript_data = {
-#     "hostname": "linode.rebelinblue.com"
-#     "password": random_string.password.result
+#     "hostname" : "linode.rebelinblue.com"
+#     "password" : random_string.password.result
 #   }
 # }
 
