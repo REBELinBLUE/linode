@@ -1,8 +1,7 @@
 resource "linode_stackscript" "bootstrap" {
   label = "bootstrap"
 
-  description = ""
-  rev_note    = ""
+  description = "Bootstrap for my Ubuntu Linode"
 
   script = <<-EOT
     #!/bin/bash
@@ -17,10 +16,10 @@ resource "linode_stackscript" "bootstrap" {
     set -x
 
     # Basic system setup
-    system_set_hostname $hostname
+    system_set_hostname "$hostname"
     system_set_timezone Europe/London
     system_configure_ntp
-    #system_add_host_entry $(system_primary_ip) "$hostname"
+    system_add_host_entry $(system_primary_ip) "$hostname"
 
     # Install packages
     DEBIAN_FRONTEND=noninteractive apt-add-repository -y ppa:fish-shell/release-3
