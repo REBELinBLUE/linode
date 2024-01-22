@@ -28,10 +28,8 @@ resource "linode_stackscript" "bootstrap" {
 
     # Secure server
     secure_server "$username" "$password" "$pubkey"
-    add_port 'ipv4' 80 'tcp'
-    add_port 'ipv6' 80 'tcp'
-    add_port 'ipv4' 443 'tcp'
-    add_port 'ipv6' 443 'tcp'
+    add_ports 80 443
+    save_firewall
     #automatic_security_updates
 
     # Configure user profile
