@@ -65,8 +65,3 @@ resource "linode_firewall" "default" {
   //nodebalancers = []
   tags = local.default_tags
 }
-
-resource "linode_firewall_device" "main" {
-  firewall_id = linode_firewall.default.id
-  entity_id   = linode_instance.main.id
-}

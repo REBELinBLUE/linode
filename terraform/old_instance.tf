@@ -1,3 +1,6 @@
+locals {
+  old_instance_swap_size = 256
+}
 
 resource "linode_instance" "main" {
   label = "linode4819236"
@@ -23,13 +26,17 @@ resource "linode_instance" "main" {
   }
 
   watchdog_enabled = true
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "linode_instance_disk" "boot" {
   linode_id = linode_instance.main.id
 
   label      = "Ubuntu 16.04 LTS Disk"
-  size       = data.linode_instance_type.default.disk - linode_instance.main.swap_size
+  size       = data.linode_instance_type.default.disk - local.old_instance_swap_size
   filesystem = "ext4"
 
   # image = data.linode_image.ubuntu_16_04.id
@@ -45,14 +52,22 @@ resource "linode_instance_disk" "boot" {
   # ]
 
   # root_pass = "terr4form-test"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "linode_instance_disk" "swap" {
   linode_id = linode_instance.main.id
 
   label      = "256MB Swap Image"
-  size       = linode_instance.main.swap_size
+  size       = local.old_instance_swap_size
   filesystem = "swap"
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "linode_instance_config" "main" {
@@ -96,16 +111,33 @@ resource "linode_instance_config" "main" {
     network            = true
     updatedb_disabled  = true
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "linode_rdns" "main_ipv4" {
   address            = local.instance_ipv4_address
   rdns               = var.domain_apex
   wait_for_available = false
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "linode_rdns" "main_ipv6" {
   address            = local.instance_ipv6_address
   rdns               = var.domain_apex
   wait_for_available = false
+
+  lifecycle {
+    prevent_destroy = true
+  }
+}
+
+resource "linode_firewall_device" "main" {
+  firewall_id = linode_firewall.default.id
+  entity_id   = linode_instance.main.id
 }
