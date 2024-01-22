@@ -1,111 +1,109 @@
+# resource "linode_instance" "ubuntu_23_10" {
+#   # label = "linode54223277"
 
-resource "linode_instance" "main" {
-  label = "linode4819236"
+#   type   = data.linode_instance_type.default.id
+#   region = data.linode_region.london.id
 
-  type   = data.linode_instance_type.default.id
-  region = data.linode_region.london.id
+#   # private_ip = false
 
-  # private_ip = false
+#   tags = local.default_tags
 
-  tags = local.default_tags
+#   backups_enabled = false
+#   swap_size       = 512
+#   #resize_disk     = false
+#   #migration_type  = "cold"
 
-  backups_enabled = true
-  #swap_size       = 256
-  #resize_disk     = false
-  #migration_type  = "cold"
+#   alerts {
+#     cpu            = 90
+#     io             = 10000
+#     network_in     = 10
+#     network_out    = 10
+#     transfer_quota = 80
+#   }
 
-  alerts {
-    cpu            = 90
-    io             = 10000
-    network_in     = 10
-    network_out    = 10
-    transfer_quota = 80
-  }
+#   watchdog_enabled = true
+# }
 
-  watchdog_enabled = true
-}
+# resource "random_string" "password" {
+#   length  = 16
+#   special = true
+# }
 
-resource "linode_instance_disk" "boot" {
-  linode_id = linode_instance.main.id
+# output "password" {
+#   value = random_string.password.result
+# }
 
-  label      = "Ubuntu 16.04 LTS Disk"
-  size       = data.linode_instance_type.default.disk - linode_instance.main.swap_size
-  filesystem = "ext4"
+# resource "linode_instance_disk" "ubuntu_23_10_boot" {
+#   linode_id = linode_instance.ubuntu_23_10.id
 
-  # image = data.linode_image.ubuntu_16_04.id
+#   label      = "Boot"
+#   size       = data.linode_instance_type.default.disk - 512
+#   // linode_instance.ubuntu_23_10.swap_size FIXME This isn't working, sometimes it is 0 and creating an inconsistent plan
+#   filesystem = "ext4"
 
-  # authorized_keys = [ 
-  #   linode_sshkey.onepassword.ssh_key,
-  #   linode_sshkey.ipad.ssh_key,
-  #   linode_sshkey.gpg.ssh_key,
-  # ]
+#   image = data.linode_image.ubuntu_23_10.id
 
-  # authorized_users = [ 
-  #   data.linode_profile.me.username
-  # ]
+#   authorized_keys = [
+#     linode_sshkey.onepassword.ssh_key,
+#     linode_sshkey.ipad.ssh_key,
+#     linode_sshkey.gpg.ssh_key,
+#   ]
 
-  # root_pass = "terr4form-test"
-}
+#   authorized_users = [
+#     data.linode_profile.me.username
+#   ]
 
-resource "linode_instance_disk" "swap" {
-  linode_id = linode_instance.main.id
+#   root_pass = random_string.password.result
+# }
 
-  label      = "256MB Swap Image"
-  size       = linode_instance.main.swap_size
-  filesystem = "swap"
-}
+# resource "linode_instance_disk" "ubuntu_23_10_swap" {
+#   linode_id = linode_instance.ubuntu_23_10.id
 
-resource "linode_instance_config" "main" {
-  linode_id = linode_instance.main.id
+#   label      = "Swap Image"
+#   size       = 512
+#   // linode_instance.ubuntu_23_10.swap_size FIXME This isn't working, sometimes it is 0 and creating an inconsistent plan
+#   filesystem = "swap"
+# }
 
-  booted = true
+# resource "linode_instance_config" "ubuntu_23_10" {
+#   linode_id = linode_instance.ubuntu_23_10.id
 
-  label = "My Ubuntu 16.04 LTS Profile"
+#   booted = true
 
-  virt_mode    = "paravirt"
-  kernel       = data.linode_kernel.latest.id
-  run_level    = "default"
-  memory_limit = 0
+#   label = "Ubuntu 23.10 Profile"
 
-  device {
-    device_name = "sda"
-    disk_id     = linode_instance_disk.boot.id
-  }
+#   virt_mode    = "paravirt"
+#   kernel       = data.linode_kernel.latest.id
+#   run_level    = "default"
+#   memory_limit = 0
 
-  device {
-    device_name = "sdb"
-    disk_id     = linode_instance_disk.swap.id
-  }
+#   device {
+#     device_name = "sda"
+#     disk_id     = linode_instance_disk.ubuntu_23_10_boot.id
+#   }
 
-  device {
-    device_name = "sdc"
-    volume_id   = linode_volume.data.id
-  }
+#   device {
+#     device_name = "sdb"
+#     disk_id     = linode_instance_disk.ubuntu_23_10_swap.id
+#   }
 
-  root_device = "/dev/sda"
+#   # device {
+#   #   device_name = "sdc"
+#   #   volume_id   = linode_volume.data.id
+#   # }
 
-  interface {
-    primary = true
-    purpose = "public"
-  }
+#   root_device = "/dev/sda"
 
-  helpers {
-    devtmpfs_automount = true
-    distro             = true
-    modules_dep        = true
-    network            = true
-    updatedb_disabled  = true
-  }
-}
+#   interface {
+#     primary = true
+#     purpose = "public"
+#   }
 
-resource "linode_rdns" "main_ipv4" {
-  address            = local.instance_ipv4_address
-  rdns               = var.domain_apex
-  wait_for_available = false
-}
-
-resource "linode_rdns" "main_ipv6" {
-  address            = local.instance_ipv6_address
-  rdns               = var.domain_apex
-  wait_for_available = false
-}
+#   helpers {
+#     devtmpfs_automount = true
+#     distro             = true
+#     modules_dep        = true
+#     network            = true
+#     updatedb_disabled  = true
+#   }
+# }
