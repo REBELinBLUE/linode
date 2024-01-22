@@ -42,8 +42,3 @@ resource "linode_stackscript" "bootstrap" {
 
   images = [data.linode_image.ubuntu_23_10.id]
 }
-
-import {
-  to = linode_stackscript.bootstrap
-  id = 1301607
-}
