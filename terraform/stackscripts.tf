@@ -7,37 +7,41 @@ resource "linode_stackscript" "bootstrap" {
   script = <<-EOT
     #!/bin/bash
 
-    # <UDF name="hostname" label="The hostname for the new instace">
-    # <UDF name="password" label="The password for my user">
+    # <UDF name="username" label="The default user account" default="stephen" />
+    # <UDF name="password" label="The password for the default user account" />
+    # <UDF name="pubkey" label="The default user account's public key" />
+    # <UDF name="hostname" label="The hostname for the new instance" />
 
     source <ssinclude StackScriptID="1">
 
-    system_set_timezone Europe/London
-    system_update
+    set -x
 
-    #automatic_security_updates
-
+    # Basic system setup
     system_set_hostname $hostname
+    system_set_timezone Europe/London
+    system_configure_ntp
+    #system_add_host_entry $(system_primary_ip) "$hostname"
 
-    user_add_sudo stephen $password
-    enable_passwordless_sudo stephen
-
-    # FIXME: Use SSH keys from linode account?
-    user_add_pubkey stephen "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEgnlCD5hNitroeqHKun4svSkQwkt6OcWkTyA0g66Wj5"
-
-    apt-add-repository ppa:fish-shell/release-3
-
+    # Install packages
+    DEBIAN_FRONTEND=noninteractive apt-add-repository -y ppa:fish-shell/release-3
     system_update
-
-    ssh_disable_root
-
     system_install_package nginx fish
 
-    chsh -s /usr/bin/fish stephen
+    # Secure server
+    secure_server "$username" "$password" "$pubkey"
+    add_port 'ipv4' 80 'tcp'
+    add_port 'ipv6' 80 'tcp'
+    add_port 'ipv4' 443 'tcp'
+    add_port 'ipv6' 443 'tcp'
+    #automatic_security_updates
 
-    enable_fail2ban
+    # Configure user profile
+    #user_add_pubkey "$username" "$pubkey" # FIXME: Use all SSH keys from linode account?
+    chsh -s /usr/bin/fish "$username"
 
-    stackscript_cleanup
+    # Cleanup
+    #stackscript_cleanup
+    all_set
   EOT
 
   images = [data.linode_image.ubuntu_23_10.id]
