@@ -45,13 +45,13 @@ resource "linode_stackscript" "bootstrap" {
 
     mkdir -p /home/$ADMIN_USERNAME/.config/fish/
 
-    echo $ADMIN_PASSWORD >> /home/"${ADMIN_USERNAME}"/password.txt
-    echo "starship init fish | source" >> /home/"${ADMIN_USERNAME}"/.config/fish/config.fish
+    echo $ADMIN_PASSWORD >> /home/$ADMIN_USERNAME/password.txt
+    echo "starship init fish | source" >> /home/$ADMIN_USERNAME/.config/fish/config.fish
     printf "[username]\nformat = \"[\$user](\$style) on \"\n\n[hostname]\nformat = \"[linode](\$style) in \"" >>  ~/.config/starship.toml
 
-    chown -R "${ADMIN_USERNAME}":"${ADMIN_USERNAME}" /home/"${ADMIN_USERNAME}"/password.txt
-    chown -R "${ADMIN_USERNAME}":"${ADMIN_USERNAME}" /home/"${ADMIN_USERNAME}"/.config/fish/
-    chown -R "${ADMIN_USERNAME}":"${ADMIN_USERNAME}" /home/"${ADMIN_USERNAME}"/.config/starship.toml
+    chown -R $ADMIN_USERNAME:$ADMIN_USERNAME /home/$ADMIN_USERNAME}/password.txt
+    chown -R $ADMIN_USERNAME:$ADMIN_USERNAME /home/$ADMIN_USERNAME}/.config/fish/
+    chown -R $ADMIN_USERNAME:$ADMIN_USERNAME /home/$ADMIN_USERNAME}/.config/starship.toml
 
     # FIXME: Expire password?
 
