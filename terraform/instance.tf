@@ -2,15 +2,6 @@
 #   instance_swap_size = 512
 # }
 
-# resource "random_string" "password" {
-#   length  = 16
-#   special = true
-# }
-
-# output "password" {
-#   value = random_string.password.result
-# }
-
 # resource "linode_instance" "ubuntu_23_10" {
 #   type   = data.linode_instance_type.default.id
 #   region = data.linode_region.london.id
@@ -41,21 +32,21 @@
 
 #   authorized_keys = [
 #     linode_sshkey.onepassword.ssh_key,
-#     linode_sshkey.ipad.ssh_key,
-#     linode_sshkey.gpg.ssh_key,
+#     # linode_sshkey.ipad.ssh_key,
+#     # linode_sshkey.gpg.ssh_key,
 #   ]
 
-#   authorized_users = [
-#     data.linode_profile.me.username
-#   ]
+#   # authorized_users = [
+#   #   data.linode_profile.me.username
+#   # ]
 
-#   root_pass = random_string.password.result
+#   # root_pass = random_string.password.result
 
 #   stackscript_id = linode_stackscript.bootstrap.id
 #   stackscript_data = {
-#     hostname = var.domain_apex,
-#     password = random_string.password.result,
-#     pubkey   = linode_sshkey.onepassword.ssh_key
+#     hostname       = var.domain_apex,
+#     admin_username = var.admin_username,
+#     admin_pubkey   = linode_sshkey.onepassword.ssh_key
 #   }
 # }
 
@@ -108,6 +99,10 @@
 #     network            = true
 #     updatedb_disabled  = true
 #   }
+# }
+
+# output "ip_address" {
+#   value = linode_instance.ubuntu_23_10.ip_address
 # }
 
 # # resource "linode_rdns" "main_ipv4" {

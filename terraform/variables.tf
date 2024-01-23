@@ -6,6 +6,10 @@ variable "soa_email" {
   type = string
 }
 
+variable "admin_username" {
+  type = string
+}
+
 variable "firewalla_address" {
   type = string
 }

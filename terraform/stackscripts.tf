@@ -6,20 +6,30 @@ resource "linode_stackscript" "bootstrap" {
   script = <<-EOT
     #!/bin/bash
 
-    # <UDF name="username" label="The default user account" default="stephen" />
-    # <UDF name="password" label="The password for the default user account" />
-    # <UDF name="pubkey" label="The default user account's public key" />
-    # <UDF name="hostname" label="The hostname for the new instance" />
+    # <UDF name="admin_username" label="The default user account">
+    # <UDF name="admin_pubkey" label="The default user account's public key">
+    # <UDF name="hostname" label="The hostname for the new instance">
 
     source <ssinclude StackScriptID="1">
 
+    ADMIN_PASSWORD=$(randomString)
+
+    echo "export ADMIN_USERNAME=$ADMIN_USERNAME" >> /root/stackscript.log
+    echo "export ADMIN_PASSWORD=\"$ADMIN_PASSWORD\"" >> /root/stackscript.log
+    echo "export ADMIN_PUBKEY=\"$ADMIN_PUBKEY\"" >> /root/stackscript.log
+    echo "export HOSTNAME=$HOSTNAME" >> /root/stackscript.log
+
+    exit
+
     set -x
+    set -e
 
     # Basic system setup
-    system_set_hostname "$hostname"
+    get_started "" "$HOSTNAME" $(system_primary_ip)
+    #system_set_hostname "$HOSTNAME"
     system_set_timezone Europe/London
     system_configure_ntp
-    system_add_host_entry $(system_primary_ip) "$hostname"
+    #system_add_host_entry $(system_primary_ip) "$HOSTNAME"
 
     # Install packages
     DEBIAN_FRONTEND=noninteractive apt-add-repository -y ppa:fish-shell/release-3
@@ -27,18 +37,26 @@ resource "linode_stackscript" "bootstrap" {
     system_install_package nginx fish
 
     # Secure server
-    secure_server "$username" "$password" "$pubkey"
-    add_ports 80 443
+    secure_server "$ADMIN_USERNAME" "$ADMIN_PASSWORD" "$ADMIN_PUBKEY"
+    add_ports 80 443 22 # FIXME: 22 shouldn't be needed here but configure_basic_firewall called by secure_server does not seem to be setting it correctly
     save_firewall
     #automatic_security_updates
 
+    #certbot_ssl $fqdn $soa_email_address nginx
+
     # Configure user profile
-    #user_add_pubkey "$username" "$pubkey" # FIXME: Use all SSH keys from linode account?
-    chsh -s /usr/bin/fish "$username"
+    #user_add_pubkey "$ADMIN_USERNAME" "$ADMIN_PUBKEY" # FIXME: Use all SSH keys from linode account?
+    chsh -s /usr/bin/fish "$ADMIN_USERNAME"
+
+    echo $ADMIN_PASSWORD > /users/$ADMIN_USERNAME/password.txt
+    # FIXME: Expire password?
 
     # Cleanup
     #stackscript_cleanup
     all_set
+
+    # Longview?
+    
   EOT
 
   images = [data.linode_image.ubuntu_23_10.id]
