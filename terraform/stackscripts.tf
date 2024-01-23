@@ -14,13 +14,6 @@ resource "linode_stackscript" "bootstrap" {
 
     ADMIN_PASSWORD=$(randomString)
 
-    echo "export ADMIN_USERNAME=$ADMIN_USERNAME" >> /root/stackscript.log
-    echo "export ADMIN_PASSWORD=\"$ADMIN_PASSWORD\"" >> /root/stackscript.log
-    echo "export ADMIN_PUBKEY=\"$ADMIN_PUBKEY\"" >> /root/stackscript.log
-    echo "export HOSTNAME=$HOSTNAME" >> /root/stackscript.log
-
-    exit
-
     set -x
     set -e
 
