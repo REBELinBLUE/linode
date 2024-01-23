@@ -42,13 +42,24 @@ resource "linode_stackscript" "bootstrap" {
     save_firewall
     #automatic_security_updates
 
+    curl -fsSL https://starship.rs/install.sh | bash -s -- -y
+
     #certbot_ssl $fqdn $soa_email_address nginx
 
     # Configure user profile
     #user_add_pubkey "$ADMIN_USERNAME" "$ADMIN_PUBKEY" # FIXME: Use all SSH keys from linode account?
     chsh -s /usr/bin/fish "$ADMIN_USERNAME"
 
-    echo $ADMIN_PASSWORD > /users/$ADMIN_USERNAME/password.txt
+    mkdir -p /home/$ADMIN_USERNAME/.config/fish/
+
+    echo $ADMIN_PASSWORD >> /home/"${ADMIN_USERNAME}"/password.txt
+    echo "starship init fish | source" >> /home/"${ADMIN_USERNAME}"/.config/fish/config.fish
+    printf "[username]\nformat = \"[\$user](\$style) on \"\n\n[hostname]\nformat = \"[linode](\$style) in \"" >>  ~/.config/starship.toml
+
+    chown -R "${ADMIN_USERNAME}":"${ADMIN_USERNAME}" /home/"${ADMIN_USERNAME}"/password.txt
+    chown -R "${ADMIN_USERNAME}":"${ADMIN_USERNAME}" /home/"${ADMIN_USERNAME}"/.config/fish/
+    chown -R "${ADMIN_USERNAME}":"${ADMIN_USERNAME}" /home/"${ADMIN_USERNAME}"/.config/starship.toml
+
     # FIXME: Expire password?
 
     # Cleanup
