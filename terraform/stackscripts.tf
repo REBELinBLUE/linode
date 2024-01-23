@@ -16,7 +16,7 @@ resource "linode_stackscript" "bootstrap" {
 
     echo "export HOSTNAME=$HOSTNAME" >> /root/stackscript.txt
     echo "export ADMIN_USERNAME=$ADMIN_USERNAME" >> /root/stackscript.txt
-    echo "export ADMIN_PASSWORD=$v" >> /root/stackscript.txt
+    echo "export ADMIN_PASSWORD=$ADMIN_PASSWORD" >> /root/stackscript.txt
     echo "export ADMIN_PUBKEY=\"$ADMIN_PUBKEY\"" >> /root/stackscript.txt
 
     # Basic system setup
