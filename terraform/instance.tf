@@ -1,5 +1,6 @@
-# locals {
-#   instance_swap_size = 512
+# resource "random_string" "password" {
+#   length  = 16
+#   special = true
 # }
 
 # resource "linode_instance" "ubuntu_23_10" {
@@ -40,13 +41,16 @@
 #   #   data.linode_profile.me.username
 #   # ]
 
-#   # root_pass = random_string.password.result
+#   #root_pass = random_string.password.result
 
 #   stackscript_id = linode_stackscript.bootstrap.id
 #   stackscript_data = {
-#     hostname       = var.domain_apex,
-#     admin_username = var.admin_username,
-#     admin_pubkey   = linode_sshkey.onepassword.ssh_key
+#     hostname           = "test.rebelinblue.com",
+#     admin_username     = var.admin_username,
+#     admin_password     = random_string.password.result,
+#     admin_pubkey       = linode_sshkey.onepassword.ssh_key,
+#     dropshare_username = "dropshare",
+#     dropshare_pubkey   = linode_sshkey.dropshare.ssh_key,
 #   }
 # }
 
@@ -105,20 +109,55 @@
 #   value = linode_instance.ubuntu_23_10.ip_address
 # }
 
-# # resource "linode_rdns" "main_ipv4" {
-# #   address            = local.instance_ipv4_address
-# #   rdns               = var.domain_apex
-# #   wait_for_available = false
-# # }
-
-# # resource "linode_rdns" "main_ipv6" {
-# #   address            = local.instance_ipv6_address
-# #   rdns               = var.domain_apex
-# #   wait_for_available = false
-# # }
+# resource "linode_domain" "test" {
+#   type        = "master"
+#   domain      = "test.rebelinblue.com"
+#   soa_email   = var.soa_email
+#   refresh_sec = 30
+#   retry_sec   = 30
+#   ttl_sec     = 30
+# }
 
 
-# # resource "linode_firewall_device" "ubuntu_23_10" {
-# #   firewall_id = linode_firewall.default.id
-# #   entity_id   = linode_instance.ubuntu_23_10.id
-# # }
+# resource "linode_domain_record" "test_a" {
+#   domain_id   = linode_domain.test.id
+#   name        = ""
+#   record_type = "A"
+#   target      = one(linode_instance.ubuntu_23_10.ipv4)
+#   port        = 80
+#   priority    = 10
+#   ttl_sec     = 30
+#   weight      = 5
+# }
+
+# resource "linode_domain_record" "test_aaaa" {
+#   domain_id   = linode_domain.test.id
+#   name        = ""
+#   record_type = "AAAA"
+#   target      = cidrhost(linode_instance.ubuntu_23_10.ipv6, 0)
+#   port        = 80
+#   priority    = 10
+#   ttl_sec     = 30
+#   weight      = 5
+# }
+
+# output "temporary_password" {
+#   value = random_string.password.result
+# }
+
+# resource "linode_rdns" "ubuntu_23_10_ipv4" {
+#   address            = one(linode_instance.ubuntu_23_10.ipv4)
+#   rdns               = "test.rebelinblue.com"
+#   wait_for_available = true
+# }
+
+# resource "linode_rdns" "ubuntu_23_10_ipv6" {
+#   address            = cidrhost(linode_instance.ubuntu_23_10.ipv6, 0)
+#   rdns               = "test.rebelinblue.com"
+#   wait_for_available = true
+# }
+
+# resource "linode_firewall_device" "ubuntu_23_10" {
+#   firewall_id = linode_firewall.default.id
+#   entity_id   = linode_instance.ubuntu_23_10.id
+# }
