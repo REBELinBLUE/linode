@@ -1,1 +1,3 @@
 provider "linode" {}
+
+provider "onepassword" {}

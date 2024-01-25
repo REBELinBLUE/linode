@@ -10,6 +10,10 @@ variable "admin_username" {
   type = string
 }
 
+variable "dropshare_username" {
+  type = string
+}
+
 variable "firewalla_address" {
   type = string
 }

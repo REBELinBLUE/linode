@@ -1,8 +1,3 @@
-# resource "random_string" "password" {
-#   length  = 16
-#   special = true
-# }
-
 # resource "linode_instance" "ubuntu_23_10" {
 #   type   = data.linode_instance_type.default.id
 #   region = data.linode_region.london.id
@@ -41,15 +36,15 @@
 #   #   data.linode_profile.me.username
 #   # ]
 
-#   #root_pass = random_string.password.result
+#   #root_pass = data.onepassword_item.linode_root.password
 
 #   stackscript_id = linode_stackscript.bootstrap.id
 #   stackscript_data = {
 #     hostname           = "test.rebelinblue.com",
 #     admin_username     = var.admin_username,
-#     admin_password     = random_string.password.result,
+#     admin_password     = data.onepassword_item.linode_admin.password,
 #     admin_pubkey       = linode_sshkey.onepassword.ssh_key,
-#     dropshare_username = "dropshare",
+#     dropshare_username = var.dropshare_username,
 #     dropshare_pubkey   = linode_sshkey.dropshare.ssh_key,
 #   }
 # }
@@ -139,10 +134,6 @@
 #   priority    = 10
 #   ttl_sec     = 30
 #   weight      = 5
-# }
-
-# output "temporary_password" {
-#   value = random_string.password.result
 # }
 
 # resource "linode_rdns" "ubuntu_23_10_ipv4" {

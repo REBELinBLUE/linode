@@ -63,10 +63,6 @@ resource "linode_stackscript" "bootstrap" {
     echo "/dev/sdc 	 /mnt/data 	 ext4 	 defaults,noatime,nofail 0 2" >> /etc/fstab
     #mount /dev/sdc
 
-    # Force the password to be changed
-    passwd -e $ADMIN_USERNAME
-    # fixme: delte the password instead? passwd -d $ADMIN_USERNAME
-
     # Add dropshare user
     adduser "$DROPSHARE_USERNAME" --disabled-password --gecos ""
     user_add_pubkey "$DROPSHARE_USERNAME" "$DROPSHARE_PUBKEY"
@@ -75,7 +71,7 @@ resource "linode_stackscript" "bootstrap" {
     # Configure longview?
 
     #certbot_ssl "test.rebelinblue.com" "stephen@rebelinblue.com" nginx
-    #certbot -n --nginx --agree-tos --redirect -d "test.rebelinblue.com" -m "letsencrypt@stephen.rebelinblue.com"
+    #certbo
 
     # Cleanup
     stackscript_cleanup

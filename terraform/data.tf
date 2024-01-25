@@ -23,3 +23,17 @@ data "linode_image" "ubuntu_23_10" {
 }
 
 data "linode_profile" "me" {}
+
+data "onepassword_vault" "vault" {
+  name = "Personal"
+}
+
+data "onepassword_item" "linode_root" {
+  vault = data.onepassword_vault.vault.name
+  uuid  = "sfm7xtuu2eejwoblmqbkxctlky"
+}
+
+data "onepassword_item" "linode_admin" {
+  vault = data.onepassword_vault.vault.name
+  uuid  = "lcvbjqaldxh5du2ca2cq54i35m"
+}
