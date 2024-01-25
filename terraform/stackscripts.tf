@@ -27,6 +27,11 @@ resource "linode_stackscript" "bootstrap" {
     snap install --classic certbot
     ln -s /snap/bin/certbot /usr/bin/certbot
 
+    curl -LJO https://github.com/topgrade-rs/topgrade/releases/download/v14.0.1/topgrade-v14.0.1-x86_64-unknown-linux-musl.tar.gz
+    tar zvxf topgrade-v14.0.1-x86_64-unknown-linux-musl.tar.gz
+    rm -f topgrade-v14.0.1-x86_64-unknown-linux-musl.tar.gz
+    mv topgrade /usr/local/bin
+
     # FIXME: Shouldn't be needed here but configure_basic_firewall called by secure_server remove ufw, after using it to allow port 22
     # https://www.linode.com/community/questions/24680/bug-in-stackscript-bash-library-configure_basic_firewall-on-ubuntu-2310
     system_remove_package ufw
