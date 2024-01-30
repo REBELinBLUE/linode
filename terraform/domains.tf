@@ -17,6 +17,14 @@ module "cluster" {
   default_tags    = local.default_tags
 }
 
+module "home" {
+  source = "./domains/home"
+
+  soa_email    = var.soa_email
+  domain_apex  = var.domain_apex
+  default_tags = local.default_tags
+}
+
 module "fastmail" {
   source = "./domains/fastmail"
 
