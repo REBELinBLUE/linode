@@ -5,6 +5,6 @@ resource "linode_token" "terraform" {
 }
 
 resource "linode_token" "npm" {
-  label = "nginx proxy manager"
+  label  = "nginx proxy manager"
   scopes = "domains:read_write"
 }
