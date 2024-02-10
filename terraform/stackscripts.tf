@@ -40,6 +40,16 @@ resource "linode_stackscript" "bootstrap" {
     secure_server "$ADMIN_USERNAME" "$ADMIN_PASSWORD" "$ADMIN_PUBKEY"
     add_ports 80 443 # FIXME: This stopped working, again
     save_firewall
+
+    # iptables -A INPUT -p "tcp" --dport "80" -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+    # ip6tables -A INPUT -p "tcp" --dport "80" -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+    # iptables -A INPUT -p "tcp" --dport "443" -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+    # ip6tables -A INPUT -p "tcp" --dport "443" -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+    # apt install iptables-persistent
+    # echo iptables-persistent iptables-persistent/autosave_v4 boolean true | sudo debconf-set-selections
+    # echo iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
     
     # automatic_security_updates
 
@@ -58,9 +68,7 @@ resource "linode_stackscript" "bootstrap" {
     echo "starship init fish | source" >> /home/$ADMIN_USERNAME/.config/fish/config.fish
     printf "[username]\nformat = \"[\$user](\$style) on \"\n\n[hostname]\nformat = \"[linode](\$style) in \"" >>  /home/$ADMIN_USERNAME/.config/starship.toml
 
-    chown -R $ADMIN_USERNAME:$ADMIN_USERNAME /home/$ADMIN_USERNAME/.config/fish/
-    chown -R $ADMIN_USERNAME:$ADMIN_USERNAME /home/$ADMIN_USERNAME/.config/starship.toml
-
+    chown -R $ADMIN_USERNAME:$ADMIN_USERNAME /home/$ADMIN_USERNAME/.config/
     # Mount volume
     mkdir /mnt/data
     echo "/dev/sdc 	 /mnt/data 	 ext4 	 defaults,noatime,nofail 0 2" >> /etc/fstab
