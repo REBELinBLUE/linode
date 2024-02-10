@@ -38,7 +38,7 @@ resource "linode_stackscript" "bootstrap" {
 
     # Secure server
     secure_server "$ADMIN_USERNAME" "$ADMIN_PASSWORD" "$ADMIN_PUBKEY"
-    add_ports 80 443
+    add_ports 80 443 # FIXME: This stopped working, again
     save_firewall
     
     # automatic_security_updates
@@ -55,18 +55,16 @@ resource "linode_stackscript" "bootstrap" {
     touch /home/$ADMIN_USERNAME/.config/fish/config.fish
     touch /home/$ADMIN_USERNAME/.config/starship.toml
 
-    # echo $ADMIN_PASSWORD >> /home/$ADMIN_USERNAME/password.txt
     echo "starship init fish | source" >> /home/$ADMIN_USERNAME/.config/fish/config.fish
     printf "[username]\nformat = \"[\$user](\$style) on \"\n\n[hostname]\nformat = \"[linode](\$style) in \"" >>  /home/$ADMIN_USERNAME/.config/starship.toml
 
-    chown -R $ADMIN_USERNAME:$ADMIN_USERNAME /home/$ADMIN_USERNAME/password.txt
     chown -R $ADMIN_USERNAME:$ADMIN_USERNAME /home/$ADMIN_USERNAME/.config/fish/
     chown -R $ADMIN_USERNAME:$ADMIN_USERNAME /home/$ADMIN_USERNAME/.config/starship.toml
 
     # Mount volume
     mkdir /mnt/data
     echo "/dev/sdc 	 /mnt/data 	 ext4 	 defaults,noatime,nofail 0 2" >> /etc/fstab
-    #mount /dev/sdc
+    mount /dev/sdc
 
     # Add dropshare user
     adduser "$DROPSHARE_USERNAME" --disabled-password --gecos ""
@@ -76,7 +74,6 @@ resource "linode_stackscript" "bootstrap" {
     # Configure longview?
 
     #certbot_ssl "test.rebelinblue.com" "stephen@rebelinblue.com" nginx
-    #certbo
 
     # Cleanup
     stackscript_cleanup

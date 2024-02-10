@@ -1,9 +1,8 @@
 resource "linode_volume" "data" {
   label = "data"
-  size  = 10
 
-  region    = linode_instance.main.region
-  linode_id = linode_instance.main.id
+  size   = 10
+  region = data.linode_region.london.id
 
   tags = local.default_tags
 }
