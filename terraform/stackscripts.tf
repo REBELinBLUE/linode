@@ -90,16 +90,11 @@ resource "linode_stackscript" "bootstrap" {
     DEBIAN_FRONTEND=noninteractive apt-get -y install "fail2ban" -qq >/dev/null
 
     # Configure fail2ban defaults
-    cd /etc/fail2ban
-    cp fail2ban.conf fail2ban.local
-    cp jail.conf jail.local
+    cp /etc/fail2ban/fail2ban.conf /etc/fail2ban/fail2ban.local
+    cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
     sed -i -e "s/backend = auto/backend = systemd/" /etc/fail2ban/jail.local
     systemctl enable fail2ban
     systemctl start fail2ban
-    cd /root/
-    # Start fail2ban and enable it as a system service
-    systemctl start fail2ban
-    systemctl enable fail2ban
 
     iptables -A INPUT -p "tcp" --dport "80" -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
     ip6tables -A INPUT -p "tcp" --dport "80" -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
