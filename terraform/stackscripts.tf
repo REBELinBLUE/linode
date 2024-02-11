@@ -142,6 +142,7 @@ resource "linode_stackscript" "bootstrap" {
     # mkdir /var/log/nginx/dropshare.rebelinblue.com/
     # systemctl restart nginx
     # certbot -n --nginx --agree-tos --redirect -m letsencrypt@stephen.rebelinblue.com -d phpdeployment.org,www.phpdeployment.org
+    # certbot -n --nginx --agree-tos --redirect -m letsencrypt@stephen.rebelinblue.com -d rebelinblue.com,www.rebelinblue.com
     # certbot -n --nginx --agree-tos --redirect -m letsencrypt@stephen.rebelinblue.com -d dropshare.rebelinblue.com
 
     # Cleanup
