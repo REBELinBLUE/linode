@@ -36,13 +36,6 @@ resource "linode_domain_record" "verification" {
       "name"   = ""
       "target" = "have-i-been-pwned-verification=9bf13a9645b5484bef3bbd410b3435c2"
     }
-    "keybase" = {
-      "name"     = "_keybase"
-      "target"   = "keybase-site-verification=D8uEqGmjowl1Ct6hkP62YYP1kRQnJtKj-kETOf6crkM"
-      "priority" = 10
-      "weight"   = 5
-      "port"     = 80 // FIXME: Why?
-    }
   }
 
   domain_id   = linode_domain.this.id
