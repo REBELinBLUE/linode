@@ -4,7 +4,7 @@ resource "linode_sshkey" "onepassword" {
 }
 
 resource "linode_sshkey" "ipad" {
-  label   = "iPad"
+  label   = "iPad Prompt App"
   ssh_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDTMpjcBBu6P2Arf5zF1kEOJJma5+SS9C87p0SqohTaUqo6XbQb/6cEtZmJy+9FlAQyCMRz+tsypbNE3PFkVUZFTehUWVBAY+oBmv8atQ4v+ar8m9RD+ZZvf/42pKOHo1fnLB4dCHb1W5YZM001KlFedNNczj89B2i0+NFLl9vHP09L9E07oE4hDXISCAm1qvDSoOCJfPZzLVZdQN9Ybw8k4zAbPKFchDXRDGl7N+sUbBCG/WnUyzgNKJcusxge14oktP/WkMK+DJWfCwG3kijnC2CxHkf3M+sgFJMe/y1+RWgHhcANZKenTYq2FuamELOfo1LRD0XlbK2fbfXaDCOp"
 }
 

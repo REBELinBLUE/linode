@@ -67,6 +67,7 @@ resource "linode_stackscript" "bootstrap" {
     # Disable password authentication
     sed -i -e "s/PasswordAuthentication yes/PasswordAuthentication no/" /etc/ssh/sshd_config
     sed -i -e "s/#PasswordAuthentication no/PasswordAuthentication no/" /etc/ssh/sshd_config
+    echo "PubkeyAcceptedAlgorithms +ssh-rsa" >> /etc/ssh/sshd_config
     # Restart SSHd
     systemctl restart ssh
 
