@@ -40,7 +40,7 @@ resource "linode_instance_disk" "ubuntu_23_10_boot" {
 
   stackscript_id = linode_stackscript.bootstrap.id
   stackscript_data = {
-    hostname           = "test.rebelinblue.com", // FIXME Should be var.domain_apex,
+    hostname           = var.domain_apex,
     admin_username     = var.admin_username,
     admin_password     = data.onepassword_item.linode_admin.password,
     admin_pubkey       = linode_sshkey.onepassword.ssh_key,
