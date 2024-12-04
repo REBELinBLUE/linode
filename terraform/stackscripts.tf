@@ -13,15 +13,8 @@ resource "linode_stackscript" "bootstrap" {
     # <UDF name="hostname" label="The hostname for the new instance">
     # <UDF name="longview_api_key" label="The API key to use for Linode Longview">
 
-    source <ssinclude StackScriptID="1">
-
-    function system_primary_ip {
-      local ip_address="$(ip a | awk '/inet / {print $2}')"
-      echo $ip_address | cut -d' ' -f 2 | cut -d/ -f 1
-    }
-
     # Basic system setup
-    ip=$(system_primary_ip)
+    ip=$(ip a | awk '/inet / {print $2}' | cut -d' ' -f 2 | cut -d/ -f 1)
     printf "Setting IP Address (%s) and hostname (%s) in /etc/hosts...\n" "$ip" "$HOSTNAME"
 
     # Force IPv4 and noninteractive upgrade after script runs to prevent
@@ -42,9 +35,9 @@ resource "linode_stackscript" "bootstrap" {
     snap install --classic certbot
     ln -s /snap/bin/certbot /usr/bin/certbot
 
-    curl -LJO https://github.com/topgrade-rs/topgrade/releases/download/v14.0.1/topgrade-v14.0.1-x86_64-unknown-linux-musl.tar.gz
-    tar zvxf topgrade-v14.0.1-x86_64-unknown-linux-musl.tar.gz
-    rm -f topgrade-v14.0.1-x86_64-unknown-linux-musl.tar.gz
+    curl -LJO https://github.com/topgrade-rs/topgrade/releases/download/v16.0.1/topgrade-v16.0.1-x86_64-unknown-linux-musl.tar.gz
+    tar zvxf topgrade-v16.0.1-x86_64-unknown-linux-musl.tar.gz
+    rm -f topgrade-v16.0.1-x86_64-unknown-linux-musl.tar.gz
     mv topgrade /usr/local/bin
 
     DEBIAN_FRONTEND=noninteractive apt-get -y purge ufw -qq >/dev/null
@@ -139,42 +132,48 @@ resource "linode_stackscript" "bootstrap" {
 
     # Add dropshare user
     adduser "$DROPSHARE_USERNAME" --disabled-password --gecos ""
-    user_add_pubkey "$DROPSHARE_USERNAME" "$DROPSHARE_PUBKEY"
+    mkdir -p /home/$DROPSHARE_USERNAME/.ssh
+    chmod -R 700 /home/$DROPSHARE_USERNAME/.ssh/
+    echo "$DROPSHARE_PUBKEY" >> /home/$DROPSHARE_USERNAME/.ssh/authorized_keys
+    chown -R $DROPSHARE_USERNAME:$DROPSHARE_USERNAME /home/$DROPSHARE_USERNAME/.ssh
+    chmod 600 /home/$DROPSHARE_USERNAME/.ssh/authorized_keys
     echo "cd /mnt/data/var/www/dropshare" >> /home/$DROPSHARE_USERNAME/.profile
 
     # Configure nginx and certbot
     DEBIAN_FRONTEND=noninteractive apt-get -y install "nginx" -qq >/dev/null
-    rm /etc/nginx/sites-enabled/default
+    rm -f /etc/nginx/sites-enabled/default
     ln -s /mnt/data/etc/nginx/* /etc/nginx/sites-enabled/
     mkdir /var/log/nginx/dropshare.rebelinblue.com/
-    # Does not yet work, need to figure out how to remove certbot annotations from nginx
-    # systemctl restart nginx
-    # certbot -n --nginx --agree-tos --redirect -m letsencrypt@stephen.rebelinblue.com -d phpdeployment.org,www.phpdeployment.org
-    # certbot -n --nginx --agree-tos --redirect -m letsencrypt@stephen.rebelinblue.com -d rebelinblue.com,www.rebelinblue.com
-    # certbot -n --nginx --agree-tos --redirect -m letsencrypt@stephen.rebelinblue.com -d dropshare.rebelinblue.com
+    [ -e /etc/letsencrypt ] && rm -rf /etc/letsencrypt
+    ln -s /mnt/data/etc/letsencrypt /etc/letsencrypt
+    systemctl restart nginx
+    certbot -n --nginx --agree-tos --redirect -m letsencrypt@stephen.rebelinblue.com -d phpdeployment.org,www.phpdeployment.org
+    certbot -n --nginx --agree-tos --redirect -m letsencrypt@stephen.rebelinblue.com -d rebelinblue.com,www.rebelinblue.com
+    certbot -n --nginx --agree-tos --redirect -m letsencrypt@stephen.rebelinblue.com -d dropshare.rebelinblue.com
 
     # TODO: Configure longview    
-    # printf "Configuring Longview...\n"
-    # release=$(lsb_release -sc)
-    # echo "deb https://apt-longview.linode.com/ $release main" | tee /etc/apt/sources.list.d/longview.list
-    # curl -O https://apt-longview.linode.com/linode.gpg
-    # mv linode.gpg /etc/apt/trusted.gpg.d/linode.gpg
-    # DEBIAN_FRONTEND=noninteractive apt-get update -qq >/dev/null
-    # mkdir /etc/linode/
-    # #echo "$LONGVIEW_API_KEY" | tee /etc/linode/longview.key
-    # DEBIAN_FRONTEND=noninteractive apt-get install "linode-longview" -qq >/dev/null
-    # systemctl start longview
+    printf "Configuring Longview...\n"
+    release=$(lsb_release -sc)
+    echo "deb https://apt-longview.linode.com/ $release main" >> /etc/apt/sources.list.d/longview.list
+    curl -O https://apt-longview.linode.com/linode.gpg
+    mv linode.gpg /etc/apt/trusted.gpg.d/linode.gpg
+    DEBIAN_FRONTEND=noninteractive apt-get update -qq >/dev/null
+    mkdir /etc/linode/
+    echo "$LONGVIEW_API_KEY" >> /etc/linode/longview.key
+    DEBIAN_FRONTEND=noninteractive apt-get install "linode-longview" -qq >/dev/null
+    systemctl start longview
 
     # Cleanup
     printf "Running initial updates - This will take a while...\n"
     DEBIAN_FRONTEND=noninteractive apt-get -y upgrade >/dev/null
+    #topgrade -y
 
     # Force IPv4 and noninteractive upgrade after script runs to prevent breaking nf_conntrack for UFW
-    echo 'Acquire::ForceIPv4 "true";' | tee /etc/apt/apt.conf.d/99force-ipv4
+    echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
     
     # Clean up
     rm /root/StackScript
-    rm /root/ssinclude*
+    #rm /root/ssinclude*
     echo "Installation complete!"
 
     printf "The StackScript has completed successfully.\n"
