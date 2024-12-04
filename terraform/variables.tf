@@ -17,3 +17,7 @@ variable "dropshare_username" {
 variable "firewalla_address" {
   type = string
 }
+
+variable "longview_api_key" {
+  type = string
+}

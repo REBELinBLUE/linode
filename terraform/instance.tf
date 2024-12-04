@@ -46,6 +46,7 @@ resource "linode_instance_disk" "main_boot" {
     admin_pubkey       = linode_sshkey.onepassword.ssh_key,
     dropshare_username = var.dropshare_username,
     dropshare_pubkey   = linode_sshkey.dropshare.ssh_key,
+    longview_api_key   = var.longview_api_key,
   }
 }
 
