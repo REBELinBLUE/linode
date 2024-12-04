@@ -1,4 +1,4 @@
-resource "linode_instance" "ubuntu_23_10" {
+resource "linode_instance" "main" {
   type   = data.linode_instance_type.default.id
   region = data.linode_region.london.id
 
@@ -17,14 +17,14 @@ resource "linode_instance" "ubuntu_23_10" {
   watchdog_enabled = true
 }
 
-resource "linode_instance_disk" "ubuntu_23_10_boot" {
-  linode_id = linode_instance.ubuntu_23_10.id
+resource "linode_instance_disk" "main_boot" {
+  linode_id = linode_instance.main.id
 
   label      = "Boot"
   size       = data.linode_instance_type.default.disk - local.instance_swap_size
   filesystem = "ext4"
 
-  image = data.linode_image.ubuntu_23_10.id
+  image = data.linode_image.ubuntu_24_04.id
 
   authorized_keys = [
     linode_sshkey.onepassword.ssh_key,
@@ -49,20 +49,20 @@ resource "linode_instance_disk" "ubuntu_23_10_boot" {
   }
 }
 
-resource "linode_instance_disk" "ubuntu_23_10_swap" {
-  linode_id = linode_instance.ubuntu_23_10.id
+resource "linode_instance_disk" "main_swap" {
+  linode_id = linode_instance.main.id
 
   label      = "Swap Image"
   size       = local.instance_swap_size
   filesystem = "swap"
 }
 
-resource "linode_instance_config" "ubuntu_23_10" {
-  linode_id = linode_instance.ubuntu_23_10.id
+resource "linode_instance_config" "main" {
+  linode_id = linode_instance.main.id
 
   booted = true
 
-  label = "Ubuntu 23.10 Profile"
+  label = "Ubuntu 24.04 LTS Profile"
 
   virt_mode    = "paravirt"
   kernel       = data.linode_kernel.latest.id
@@ -71,12 +71,12 @@ resource "linode_instance_config" "ubuntu_23_10" {
 
   device {
     device_name = "sda"
-    disk_id     = linode_instance_disk.ubuntu_23_10_boot.id
+    disk_id     = linode_instance_disk.main_boot.id
   }
 
   device {
     device_name = "sdb"
-    disk_id     = linode_instance_disk.ubuntu_23_10_swap.id
+    disk_id     = linode_instance_disk.main_swap.id
   }
 
   device {
@@ -100,8 +100,8 @@ resource "linode_instance_config" "ubuntu_23_10" {
   }
 }
 
-resource "linode_rdns" "ubuntu_23_10_ipv4" {
-  address            = one(linode_instance.ubuntu_23_10.ipv4)
+resource "linode_rdns" "main_ipv4" {
+  address            = one(linode_instance.main.ipv4)
   rdns               = var.domain_apex
   wait_for_available = true
 
@@ -110,8 +110,8 @@ resource "linode_rdns" "ubuntu_23_10_ipv4" {
   }
 }
 
-resource "linode_rdns" "ubuntu_23_10_ipv6" {
-  address            = cidrhost(linode_instance.ubuntu_23_10.ipv6, 0)
+resource "linode_rdns" "main_ipv6" {
+  address            = cidrhost(linode_instance.main.ipv6, 0)
   rdns               = var.domain_apex
   wait_for_available = true
 
@@ -120,7 +120,7 @@ resource "linode_rdns" "ubuntu_23_10_ipv6" {
   }
 }
 
-resource "linode_firewall_device" "ubuntu_23_10" {
+resource "linode_firewall_device" "main" {
   firewall_id = linode_firewall.default.id
-  entity_id   = linode_instance.ubuntu_23_10.id
+  entity_id   = linode_instance.main.id
 }

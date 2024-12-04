@@ -12,13 +12,15 @@ resource "linode_stackscript" "bootstrap" {
     # <UDF name="dropshare_pubkey" label="The dropshare user account's public key">
     # <UDF name="hostname" label="The hostname for the new instance">
 
+    source <ssinclude StackScriptID="1">
+
     function system_primary_ip {
       local ip_address="$(ip a | awk '/inet / {print $2}')"
       echo $ip_address | cut -d' ' -f 2 | cut -d/ -f 1
     }
 
     # Basic system setup
-    local ip=$system_primary_ip()
+    ip=$(system_primary_ip)
     printf "Setting IP Address (%s) and hostname (%s) in /etc/hosts...\n" "$ip" "$HOSTNAME"
 
     # Force IPv4 and noninteractive upgrade after script runs to prevent
@@ -35,7 +37,7 @@ resource "linode_stackscript" "bootstrap" {
     # Install packages
     DEBIAN_FRONTEND=noninteractive apt-add-repository -y ppa:fish-shell/release-3
     DEBIAN_FRONTEND=noninteractive apt-get update -qq >/dev/null
-    DEBIAN_FRONTEND=noninteractive apt-get -y install "nginx fish" -qq >/dev/null
+    DEBIAN_FRONTEND=noninteractive apt-get -y install "fish" -qq >/dev/null
     snap install --classic certbot
     ln -s /snap/bin/certbot /usr/bin/certbot
 
@@ -119,7 +121,7 @@ resource "linode_stackscript" "bootstrap" {
 
     chsh -s /usr/bin/fish "$ADMIN_USERNAME"
 
-    mkdir -p /home/stephen/.config/fish/
+    mkdir -p /home/$ADMIN_USERNAME/.config/fish/
     touch /home/$ADMIN_USERNAME/.config/fish/config.fish
     touch /home/$ADMIN_USERNAME/.config/starship.toml
 
@@ -127,23 +129,30 @@ resource "linode_stackscript" "bootstrap" {
     printf "[username]\nformat = \"[\$user](\$style) on \"\n\n[hostname]\nformat = \"[linode](\$style) in \"" >>  /home/$ADMIN_USERNAME/.config/starship.toml
 
     chown -R $ADMIN_USERNAME:$ADMIN_USERNAME /home/$ADMIN_USERNAME/.config/
+
     # Mount volume
     mkdir /mnt/data
     echo "/dev/sdc 	 /mnt/data 	 ext4 	 defaults,noatime,nofail 0 2" >> /etc/fstab
     mount /dev/sdc
+    systemctl daemon-reload
 
     # Add dropshare user
     adduser "$DROPSHARE_USERNAME" --disabled-password --gecos ""
     user_add_pubkey "$DROPSHARE_USERNAME" "$DROPSHARE_PUBKEY"
-    echo "cd /mnt/data/var/www/dropshare" >> /users/$DROPSHARE_USERNAME/.profile
+    echo "cd /mnt/data/var/www/dropshare" >> /home/$DROPSHARE_USERNAME/.profile
 
-    # Configure longview, nginx and certbot
-    # ln -s /mnt/data/etc/nginx/* /etc/nginx/site-enabled/
-    # mkdir /var/log/nginx/dropshare.rebelinblue.com/
+    # Configure nginx and certbot
+    DEBIAN_FRONTEND=noninteractive apt-get -y install "nginx" -qq >/dev/null
+    rm /etc/nginx/sites-enabled/default
+    ln -s /mnt/data/etc/nginx/* /etc/nginx/sites-enabled/
+    mkdir /var/log/nginx/dropshare.rebelinblue.com/
+    # Does not yet work, need to figure out how to remove certbot annotations from nginx
     # systemctl restart nginx
     # certbot -n --nginx --agree-tos --redirect -m letsencrypt@stephen.rebelinblue.com -d phpdeployment.org,www.phpdeployment.org
     # certbot -n --nginx --agree-tos --redirect -m letsencrypt@stephen.rebelinblue.com -d rebelinblue.com,www.rebelinblue.com
     # certbot -n --nginx --agree-tos --redirect -m letsencrypt@stephen.rebelinblue.com -d dropshare.rebelinblue.com
+
+    # TODO: Configure longview
 
     # Cleanup
     printf "Running initial updates - This will take a while...\n"
@@ -151,6 +160,7 @@ resource "linode_stackscript" "bootstrap" {
 
     # Force IPv4 and noninteractive upgrade after script runs to prevent breaking nf_conntrack for UFW
     echo 'Acquire::ForceIPv4 "true";' > /etc/apt/apt.conf.d/99force-ipv4
+    
     # Clean up
     rm /root/StackScript
     rm /root/ssinclude*
@@ -160,5 +170,9 @@ resource "linode_stackscript" "bootstrap" {
     touch "/root/.ss-complete"
   EOT
 
-  images = [data.linode_image.ubuntu_23_10.id]
+  images = [
+    data.linode_image.ubuntu_16_04.id,
+    data.linode_image.ubuntu_23_10.id,
+    data.linode_image.ubuntu_24_04.id
+  ]
 }

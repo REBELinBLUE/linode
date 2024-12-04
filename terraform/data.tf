@@ -10,16 +10,16 @@ data "linode_region" "london" {
   id = "eu-west"
 }
 
-data "linode_region" "paris" {
-  id = "fr-par"
-}
-
 data "linode_image" "ubuntu_16_04" {
   id = "linode/ubuntu16.04lts"
 }
 
 data "linode_image" "ubuntu_23_10" {
   id = "linode/ubuntu23.10"
+}
+
+data "linode_image" "ubuntu_24_04" {
+  id = "linode/ubuntu24.04"
 }
 
 data "linode_profile" "me" {}
