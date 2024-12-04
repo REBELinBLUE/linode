@@ -29,7 +29,7 @@ resource "linode_stackscript" "bootstrap" {
     echo 'Acquire::ForceIPv4 "true";' > /etc/apt/apt.conf.d/99force-ipv4
 
     printf "Checking for initial updates...\n"
-    DEBIAN_FRONTEND=noninteractive apt update -qq >/dev/null
+    DEBIAN_FRONTEND=noninteractive apt-get update -qq >/dev/null
 
     hostnamectl set-hostname "$HOSTNAME"
     timedatectl set-timezone "Europe/London"
@@ -37,8 +37,8 @@ resource "linode_stackscript" "bootstrap" {
 
     # Install packages
     DEBIAN_FRONTEND=noninteractive apt-add-repository -y ppa:fish-shell/release-3
-    DEBIAN_FRONTEND=noninteractive apt update -qq >/dev/null
-    DEBIAN_FRONTEND=noninteractive apt -y install "fish" -qq >/dev/null
+    DEBIAN_FRONTEND=noninteractive apt-get update -qq >/dev/null
+    DEBIAN_FRONTEND=noninteractive apt-get -y install "fish" -qq >/dev/null
     snap install --classic certbot
     ln -s /snap/bin/certbot /usr/bin/certbot
 
@@ -47,10 +47,10 @@ resource "linode_stackscript" "bootstrap" {
     rm -f topgrade-v14.0.1-x86_64-unknown-linux-musl.tar.gz
     mv topgrade /usr/local/bin
 
-    DEBIAN_FRONTEND=noninteractive apt -y purge ufw -qq >/dev/null
+    DEBIAN_FRONTEND=noninteractive apt-get -y purge ufw -qq >/dev/null
 
     # Secure server
-    DEBIAN_FRONTEND=noninteractive apt -y install "sudo" -qq >/dev/null
+    DEBIAN_FRONTEND=noninteractive apt-get -y install "sudo" -qq >/dev/null
     adduser "$ADMIN_USERNAME" --disabled-password --gecos ""
     echo "$ADMIN_USERNAME:$ADMIN_PASSWORD" | chpasswd
     # Add the newly created user to the 'sudo' group
@@ -73,7 +73,7 @@ resource "linode_stackscript" "bootstrap" {
     # Restart SSHd
     systemctl restart ssh
 
-    DEBIAN_FRONTEND=noninteractive apt -y install "iptables-persistent" -qq >/dev/null
+    DEBIAN_FRONTEND=noninteractive apt-get -y install "iptables-persistent" -qq >/dev/null
 
     iptables --policy INPUT DROP
     iptables --policy OUTPUT ACCEPT
@@ -90,7 +90,7 @@ resource "linode_stackscript" "bootstrap" {
     iptables -A INPUT -p "tcp" --dport "22" -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
     ip6tables -A INPUT -p "tcp" --dport "22" -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 
-    DEBIAN_FRONTEND=noninteractive apt -y install "fail2ban" -qq >/dev/null
+    DEBIAN_FRONTEND=noninteractive apt-get -y install "fail2ban" -qq >/dev/null
 
     # Configure fail2ban defaults
     cp /etc/fail2ban/fail2ban.conf /etc/fail2ban/fail2ban.local
@@ -109,7 +109,7 @@ resource "linode_stackscript" "bootstrap" {
     echo iptables-persistent iptables-persistent/autosave_v6 boolean true | sudo debconf-set-selections
 
     # Automatic updates
-    DEBIAN_FRONTEND=noninteractive apt -y install "unattended-upgrades" -qq >/dev/null
+    DEBIAN_FRONTEND=noninteractive apt-get -y install "unattended-upgrades" -qq >/dev/null
     echo "APT::Periodic::Update-Package-Lists \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades 
     echo "APT::Periodic::Download-Upgradeable-Packages \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades 
     echo "APT::Periodic::AutocleanInterval \"7\";" >> /etc/apt/apt.conf.d/20auto-upgrades 
@@ -134,8 +134,8 @@ resource "linode_stackscript" "bootstrap" {
     # Mount volume
     mkdir /mnt/data
     echo "/dev/sdc 	 /mnt/data 	 ext4 	 defaults,noatime,nofail 0 2" >> /etc/fstab
-    mount /dev/sdc
     systemctl daemon-reload
+    mount /dev/sdc
 
     # Add dropshare user
     adduser "$DROPSHARE_USERNAME" --disabled-password --gecos ""
@@ -143,7 +143,7 @@ resource "linode_stackscript" "bootstrap" {
     echo "cd /mnt/data/var/www/dropshare" >> /home/$DROPSHARE_USERNAME/.profile
 
     # Configure nginx and certbot
-    DEBIAN_FRONTEND=noninteractive apt -y install "nginx" -qq >/dev/null
+    DEBIAN_FRONTEND=noninteractive apt-get -y install "nginx" -qq >/dev/null
     rm /etc/nginx/sites-enabled/default
     ln -s /mnt/data/etc/nginx/* /etc/nginx/sites-enabled/
     mkdir /var/log/nginx/dropshare.rebelinblue.com/
@@ -159,15 +159,15 @@ resource "linode_stackscript" "bootstrap" {
     # echo "deb https://apt-longview.linode.com/ $release main" | tee /etc/apt/sources.list.d/longview.list
     # curl -O https://apt-longview.linode.com/linode.gpg
     # mv linode.gpg /etc/apt/trusted.gpg.d/linode.gpg
-    # DEBIAN_FRONTEND=noninteractive apt update -qq >/dev/null
+    # DEBIAN_FRONTEND=noninteractive apt-get update -qq >/dev/null
     # mkdir /etc/linode/
     # #echo "$LONGVIEW_API_KEY" | tee /etc/linode/longview.key
-    # DEBIAN_FRONTEND=noninteractive apt install "linode-longview" -qq >/dev/null
+    # DEBIAN_FRONTEND=noninteractive apt-get install "linode-longview" -qq >/dev/null
     # systemctl start longview
 
     # Cleanup
     printf "Running initial updates - This will take a while...\n"
-    DEBIAN_FRONTEND=noninteractive apt -y upgrade >/dev/null
+    DEBIAN_FRONTEND=noninteractive apt-get -y upgrade >/dev/null
 
     # Force IPv4 and noninteractive upgrade after script runs to prevent breaking nf_conntrack for UFW
     echo 'Acquire::ForceIPv4 "true";' | tee /etc/apt/apt.conf.d/99force-ipv4
