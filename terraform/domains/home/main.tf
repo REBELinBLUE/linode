@@ -10,8 +10,9 @@ resource "linode_domain" "this" {
 
 # resource "linode_domain_record" "rpi" {
 #   for_each = toset([
-#     "homebridge", "plex", "tautulli",
+#     "plex", "tautulli",
 #     "sonarr", "jackett", "transmission",
+#     "homeassistant"
 #   ])
 
 #   domain_id   = linode_domain.this.id
