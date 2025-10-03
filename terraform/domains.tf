@@ -34,11 +34,11 @@ module "fastmail" {
   default_tags   = local.default_tags
 }
 
-module "phpdeployment" {
-  source = "./domains/phpdeployment"
+# module "phpdeployment" {
+#   source = "./domains/phpdeployment"
 
-  soa_email    = var.soa_email
-  ipv4_address = local.instance_ipv4_address
-  ipv6_address = local.instance_ipv6_address
-  default_tags = local.default_tags
-}
+#   soa_email    = var.soa_email
+#   ipv4_address = local.instance_ipv4_address
+#   ipv6_address = local.instance_ipv6_address
+#   default_tags = local.default_tags
+# }

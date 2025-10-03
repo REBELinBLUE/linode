@@ -51,7 +51,7 @@ resource "linode_domain_record" "verification" {
 resource "linode_domain_record" "cname" {
   for_each = toset([
     "dropshare",
-    "games",
+    //"games",
     "www"
   ])
 
