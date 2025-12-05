@@ -74,13 +74,14 @@ resource "linode_stackscript" "bootstrap" {
     iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
     iptables -A INPUT -i lo -m comment --comment "Allow loopback connections" -j ACCEPT
     iptables -A INPUT -p icmp -m comment --comment "Allow Ping to work as expected" -j ACCEPT
+    iptables -A INPUT -p "tcp" --dport "22" -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
     ip6tables --policy INPUT DROP
     ip6tables --policy OUTPUT ACCEPT
     ip6tables --policy FORWARD DROP
     ip6tables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
     ip6tables -A INPUT -i lo -m comment --comment "Allow loopback connections" -j ACCEPT
     ip6tables -A INPUT -p icmpv6 -m comment --comment "Allow Ping to work as expected" -j ACCEPT
-    iptables -A INPUT -p "tcp" --dport "22" -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
     ip6tables -A INPUT -p "tcp" --dport "22" -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 
     DEBIAN_FRONTEND=noninteractive apt-get -y install "fail2ban" -qq >/dev/null
@@ -157,6 +158,8 @@ resource "linode_stackscript" "bootstrap" {
     echo "deb https://apt-longview.linode.com/ $release main" >> /etc/apt/sources.list.d/longview.list
     curl -O https://apt-longview.linode.com/linode.gpg
     mv linode.gpg /etc/apt/trusted.gpg.d/linode.gpg
+    curl -O https://apt-longview.linode.com/linode-new.gpg
+    mv linode-new.gpg /etc/apt/trusted.gpg.d/linode-new.gpg
     DEBIAN_FRONTEND=noninteractive apt-get update -qq >/dev/null
     mkdir /etc/linode/
     echo "$LONGVIEW_API_KEY" >> /etc/linode/longview.key
@@ -169,7 +172,7 @@ resource "linode_stackscript" "bootstrap" {
     #topgrade -y
 
     # Force IPv4 and noninteractive upgrade after script runs to prevent breaking nf_conntrack for UFW
-    echo 'Acquire::ForceIPv4 "true";' >> /etc/apt/apt.conf.d/99force-ipv4
+    echo 'Acquire::ForceIPv4 "true";' > /etc/apt/apt.conf.d/99force-ipv4
     
     # Clean up
     rm /root/StackScript
