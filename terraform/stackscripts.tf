@@ -39,6 +39,9 @@ resource "linode_stackscript" "bootstrap" {
     tar zvxf topgrade-v16.0.1-x86_64-unknown-linux-musl.tar.gz
     rm -f topgrade-v16.0.1-x86_64-unknown-linux-musl.tar.gz
     mv topgrade /usr/local/bin
+    mkdir -p /home/$ADMIN_USERNAME/.config/topgrade.d/
+    echo "[misc]\ndisable = [\"firmware\"]" > /home/$ADMIN_USERNAME/.config/topgrade.d/topgrade.toml
+    chown -R "$ADMIN_USERNAME":"$ADMIN_USERNAME" /home/$ADMIN_USERNAME/.config/topgrade.d/
 
     DEBIAN_FRONTEND=noninteractive apt-get -y purge ufw -qq >/dev/null
 
