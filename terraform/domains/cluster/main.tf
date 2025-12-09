@@ -13,7 +13,7 @@ resource "linode_domain_record" "cname" {
     "alertmanager", "auth", "blackbox",
     "dashboard", "grafana", "kubeview",
     "launchpad", "prometheus", "promtail",
-    "pushgateway", "traefik", "weave-gitops"
+    "pushgateway", "traefik", "argocd",
   ])
 
   domain_id   = linode_domain.this.id
