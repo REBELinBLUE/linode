@@ -12,7 +12,7 @@ resource "linode_domain_record" "cname" {
   for_each = toset([
     "alertmanager", "auth", "blackbox",
     "dashboard", "grafana", "kubeview",
-    "launchpad", "prometheus", "promtail",
+    "launchpad", "prometheus", "alloy",
     "pushgateway", "traefik", "argocd",
   ])
 
