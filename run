@@ -2,4 +2,4 @@
 
 tfswitch -b ~/.local/bin/terraform
 
-op run --account my.1password.com --env-file=".env" -- terraform -chdir=terraform "$@"
+op run --environment ioftq33iqszmufjibuf7l6xeqa --account my.1password.com -- terraform -chdir=terraform "$@"

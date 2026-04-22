@@ -4,11 +4,11 @@ terraform {
   required_providers {
     linode = {
       source  = "linode/linode"
-      version = "3.6.0"
+      version = "3.11.0"
     }
     onepassword = {
       source  = "1Password/onepassword"
-      version = "2.1.2"
+      version = "3.3.1"
     }
   }
 }
