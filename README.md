@@ -6,9 +6,7 @@
 * Enable bucket versioning
 * Block public access
 
-2. Create a DynamoDB table `terraform-state-lock` in `eu-west-2` with a Partition key `LockID` of type `string`
-
-3. Create an IAM user with an attached policy and create an access key
+2. Create an IAM user with an attached policy and create an access key
 
 ```json
 {
@@ -30,12 +28,9 @@
 		{
 			"Effect": "Allow",
 			"Action": [
-				"dynamodb:DescribeTable",
-				"dynamodb:GetItem",
-				"dynamodb:PutItem",
-				"dynamodb:DeleteItem"
+				"s3:DeleteObject"
 			],
-			"Resource": "arn:aws:dynamodb:eu-west-2:338122837542:table/terraform-state-lock"
+			"Resource": "arn:aws:s3:::rebelinblue-terraform-state/*.tflock"
 		}
 	]
 }
