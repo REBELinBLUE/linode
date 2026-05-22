@@ -38,7 +38,8 @@ resource "linode_stackscript" "bootstrap" {
     curl -LJO https://github.com/topgrade-rs/topgrade/releases/download/v16.0.1/topgrade-v16.0.1-x86_64-unknown-linux-musl.tar.gz
     tar zvxf topgrade-v16.0.1-x86_64-unknown-linux-musl.tar.gz
     rm -f topgrade-v16.0.1-x86_64-unknown-linux-musl.tar.gz
-    mv topgrade /usr/local/bin
+    mkdir -p /home/$ADMIN_USERNAME/.local/bin/
+    mv topgrade /home/$ADMIN_USERNAME/.local/bin/
     mkdir -p /home/$ADMIN_USERNAME/.config/topgrade.d/
     echo "[misc]\ndisable = [\"firmware\"]" > /home/$ADMIN_USERNAME/.config/topgrade.d/topgrade.toml
     chown -R "$ADMIN_USERNAME":"$ADMIN_USERNAME" /home/$ADMIN_USERNAME/.config/topgrade.d/
@@ -123,6 +124,8 @@ resource "linode_stackscript" "bootstrap" {
     touch /home/$ADMIN_USERNAME/.config/fish/config.fish
     touch /home/$ADMIN_USERNAME/.config/starship.toml
 
+    echo "set -U fish_greeting \"\"" >> /home/$ADMIN_USERNAME/.config/fish/config.fish
+    echo "fish_add_path \$HOME/.local/bin" >> /home/$ADMIN_USERNAME/.config/fish/config.fish
     echo "starship init fish | source" >> /home/$ADMIN_USERNAME/.config/fish/config.fish
     printf "[username]\nformat = \"[\$user](\$style) on \"\n\n[hostname]\nformat = \"[linode](\$style) in \"" >>  /home/$ADMIN_USERNAME/.config/starship.toml
 
