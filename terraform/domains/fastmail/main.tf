@@ -74,6 +74,7 @@ resource "linode_domain_record" "spf" {
   weight      = 0
 }
 
+# https://www.fastmail.help/hc/en-us/articles/360060591153-Manual-DNS-configuration
 resource "linode_domain_record" "autodiscovery" {
   for_each = {
     "submission" = {
