@@ -9,3 +9,18 @@ resource "linode_token" "npm" {
   scopes = "domains:read_write"
 }
 
+# resource "linode_token" "external_dns" {
+#   label  = "External DNS"
+#   scopes = "domains:read_write"
+# }
+
+# FIXME: Add certbot token
+
+# resource "onepassword_item" "linode" {
+#   vault = data.onepassword_vault.vault.name
+
+#    title    = "Example Item with Section Map"
+#     category = "login"
+
+# }
+
