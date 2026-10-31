@@ -56,7 +56,7 @@ resource "linode_domain_record" "dmarc" {
 
   record_type = "TXT"
   name        = "_dmarc"
-  target      = "v=DMARC1; p=none;"
+  target      = "v=DMARC1; p=quarantine; pct=100;"
   priority    = 0
   ttl_sec     = 0
   weight      = 0
@@ -68,7 +68,7 @@ resource "linode_domain_record" "spf" {
   domain_id = element(local.domain_ids, count.index)
 
   record_type = "TXT"
-  target      = "v=spf1 include:spf.messagingengine.com ?all"
+  target      = "v=spf1 include:spf.messagingengine.com -all"
   priority    = 0
   ttl_sec     = 0
   weight      = 0
