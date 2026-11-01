@@ -56,7 +56,7 @@ resource "linode_domain_record" "dmarc" {
 
   record_type = "TXT"
   name        = "_dmarc"
-  target      = "v=DMARC1; p=quarantine; pct=100; rua=mailto:a90a175da656463b82a8017fe244afe2@dmarc-reports.cloudflare.net"
+  target      = "v=DMARC1; p=quarantine; pct=100;"
 
   priority    = 0
   ttl_sec     = 0
