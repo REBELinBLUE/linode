@@ -23,7 +23,7 @@ resource "linode_domain_record" "mx" {
 }
 
 resource "linode_domain_record" "dkim" {
-  count = local.number_of_domains * 3 # 3 For each domain, if it increases multiple the value and change the 2s below
+  count = local.number_of_domains * 3 # 3 For each domain, if it increases multiple the value and change the 3s below
 
   domain_id = element(local.domain_ids, floor(count.index / 3))
 
@@ -56,7 +56,13 @@ resource "linode_domain_record" "dmarc" {
 
   record_type = "TXT"
   name        = "_dmarc"
-  target      = "v=DMARC1; p=quarantine; pct=100;"
+  
+  // FIXME: This is a horrible hack
+  target = (
+    element(local.domain_names, count.index) == "stephen.rebelinblue.com" ?
+    "v=DMARC1; p=none; pct=100; rua=mailto:re+s2e22hyybuw@dmarc.postmarkapp.com; sp=none; aspf=r;" :
+    "v=DMARC1; p=none; pct=100; rua=mailto:re+u4jupvdaacb@dmarc.postmarkapp.com; sp=none; aspf=r;"
+  )
 
   priority    = 0
   ttl_sec     = 0
