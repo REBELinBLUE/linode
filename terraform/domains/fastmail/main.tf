@@ -60,8 +60,8 @@ resource "linode_domain_record" "dmarc" {
   // FIXME: This is a horrible hack
   target = (
     element(local.domain_names, count.index) == "stephen.rebelinblue.com" ?
-    "v=DMARC1; p=none; pct=100; rua=mailto:re+s2e22hyybuw@dmarc.postmarkapp.com; sp=none; aspf=r;" :
-    "v=DMARC1; p=none; pct=100; rua=mailto:re+u4jupvdaacb@dmarc.postmarkapp.com; sp=none; aspf=r;"
+    "v=DMARC1; p=quarantine; pct=100; rua=mailto:re+s2e22hyybuw@dmarc.postmarkapp.com; sp=none; aspf=r;" :
+    "v=DMARC1; p=quarantine; pct=100; rua=mailto:re+u4jupvdaacb@dmarc.postmarkapp.com; sp=none; aspf=r;"
   )
 
   priority    = 0
